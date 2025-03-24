@@ -77,23 +77,38 @@ if __name__ == '__main__':
             writer.writeheader()
             for model_name in model_name_list[:]:
                 for input_transformation_algorithm in input_transformation_algorithms[:]:
-                    exp_name = f'ic_{interconnection}_{model_name}_{input_transformation_algorithm}'
-                    row = {'exp_name': exp_name}
-                    transformation_parameters = ""
                     if input_transformation_algorithm == 'diffusion':
-                        transformation_parameters = {'interconnection': interconnection,
-                                                     'timesteps': 20,
-                                                     'beta_type': 'linear',
-                                                     'transformation_type': 'ddim',
-                                                     'diffusion_t': 0.1,
-                                                     'denoise_steps': 3}
-                    for attack_algorithm in attack_algorithms[:]:
-                        f1_after = diffusion_purification_benchmark_black(interconnection=interconnection,
-                                                                          model_name=model_name,
-                                                                          attack_algorithm=attack_algorithm,
-                                                                          input_transformation_algorithm=input_transformation_algorithm,
-                                                                          transformation_parameters=transformation_parameters,
-                                                                          device=device)
-                        row[attack_algorithm] = f1_after
-                        torch.cuda.empty_cache()
-                    writer.writerow(row)
+                        for diffusion_t in [0.05, 0.1, 0.2]:
+                            for denoise_steps in [1, 2, 3]:
+                                exp_name = f'ic_{interconnection}_{model_name}_{input_transformation_algorithm}_{diffusion_t}_{denoise_steps}'
+                                row = {'exp_name': exp_name}
+                                transformation_parameters = {'interconnection': interconnection,
+                                                             'timesteps': 20,
+                                                             'beta_type': 'linear',
+                                                             'transformation_type': 'ddim',
+                                                             'diffusion_t': diffusion_t,
+                                                             'denoise_steps': denoise_steps}
+                                for attack_algorithm in attack_algorithms[:]:
+                                    f1_after = diffusion_purification_benchmark_black(interconnection=interconnection,
+                                                                                      model_name=model_name,
+                                                                                      attack_algorithm=attack_algorithm,
+                                                                                      input_transformation_algorithm=input_transformation_algorithm,
+                                                                                      transformation_parameters=transformation_parameters,
+                                                                                      device=device)
+                                    row[attack_algorithm] = f1_after
+                                    torch.cuda.empty_cache()
+                                writer.writerow(row)
+                    else:
+                        exp_name = f'ic_{interconnection}_{model_name}_{input_transformation_algorithm}'
+                        row = {'exp_name': exp_name}
+                        transformation_parameters = ""
+                        for attack_algorithm in attack_algorithms[:]:
+                            f1_after = diffusion_purification_benchmark_black(interconnection=interconnection,
+                                                                              model_name=model_name,
+                                                                              attack_algorithm=attack_algorithm,
+                                                                              input_transformation_algorithm=input_transformation_algorithm,
+                                                                              transformation_parameters=transformation_parameters,
+                                                                              device=device)
+                            row[attack_algorithm] = f1_after
+                            torch.cuda.empty_cache()
+                        writer.writerow(row)
