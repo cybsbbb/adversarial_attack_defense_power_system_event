@@ -8,7 +8,6 @@ from adversarial_attack_defense_power_system.classifiers.evaluation import evalu
 from adversarial_attack_defense_power_system.dataset_loader.pmu_event_dataset import PMUEventDataset
 from adversarial_attack_defense_power_system.utils.random_seeds_setups import setup_random_seeds
 from adversarial_attack_defense_power_system.defenses.input_transformation.input_transformation_wrapper import input_transformation_wrapper
-from adversarial_attack_defense_power_system.defenses.diffusion.diffusion_tranformation_wrapper import diffusion_dataset_transformation
 
 
 def defense_purification(x_adv, input_transformation_algorithm, transformation_parameters):
@@ -40,21 +39,7 @@ def diffusion_purification_benchmark_black(interconnection, model_name, attack_a
     # Evaluate the F1 score
     f1_after = evaluation_numpy(x_adv_purified, testset.label, net, device)
     print(f"F1 after: {f1_after}")
-    return f1_before, f1_after
-
-
-# def diffusion_purification(x_adv):
-#     transformation_parameters = {'interconnection': 'b',
-#                                  'timesteps': 20,
-#                                  'beta_type': 'linear',
-#                                  'transformation_type': 'ddim',
-#                                  'diffusion_t': 0.1,
-#                                  'denoise_steps': 3}
-#     x_adv = np.transpose(x_adv, (0, 2, 3, 1))
-#     x_adv_purified = diffusion_dataset_transformation(x_adv, transformation_parameters)
-#     x_adv_purified = np.transpose(x_adv_purified, (0, 3, 1, 2))
-#     return x_adv_purifieds
-
+    return f1_after
 
 
 if __name__ == '__main__':
@@ -66,7 +51,6 @@ if __name__ == '__main__':
     else:
         device = torch.device("cpu")
     print(f"Using Device: {device}")
-    # device = torch.device("cpu")
 
     script_dir = Path(__file__).resolve().parent
 
