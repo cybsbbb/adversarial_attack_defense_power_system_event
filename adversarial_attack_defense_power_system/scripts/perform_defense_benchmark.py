@@ -6,27 +6,38 @@ from adversarial_attack_defense_power_system.classifiers.load_classifier import 
 from adversarial_attack_defense_power_system.classifiers.evaluation import evaluation_numpy
 from adversarial_attack_defense_power_system.dataset_loader.pmu_event_dataset import PMUEventDataset
 from adversarial_attack_defense_power_system.utils.random_seeds_setups import setup_random_seeds
+from adversarial_attack_defense_power_system.defenses.input_transformation.input_transformation_wrapper import input_transformation_wrapper
 from adversarial_attack_defense_power_system.defenses.diffusion.diffusion_tranformation_wrapper import diffusion_dataset_transformation
 
 
-def diffusion_purification(x_adv):
-    transformation_parameters = {'interconnection': 'b',
-                                 'timesteps': 20,
-                                 'beta_type': 'linear',
-                                 'transformation_type': 'ddim',
-                                 'diffusion_t': 0.1,
-                                 'denoise_steps': 3}
+def defense_purification(x_adv, input_transformation_algorithm, transformation_parameters):
+    # Input transformation
     x_adv = np.transpose(x_adv, (0, 2, 3, 1))
-    x_adv_purified = diffusion_dataset_transformation(x_adv, transformation_parameters)
+    x_adv_purified = input_transformation_wrapper(x_adv, input_transformation_algorithm, transformation_parameters)
     x_adv_purified = np.transpose(x_adv_purified, (0, 3, 1, 2))
     return x_adv_purified
 
 
-def diffusion_purification_benchmark_black(interconnection, model_name, attack_algorithm, device):
+# def diffusion_purification(x_adv):
+#     transformation_parameters = {'interconnection': 'b',
+#                                  'timesteps': 20,
+#                                  'beta_type': 'linear',
+#                                  'transformation_type': 'ddim',
+#                                  'diffusion_t': 0.1,
+#                                  'denoise_steps': 3}
+#     x_adv = np.transpose(x_adv, (0, 2, 3, 1))
+#     x_adv_purified = diffusion_dataset_transformation(x_adv, transformation_parameters)
+#     x_adv_purified = np.transpose(x_adv_purified, (0, 3, 1, 2))
+#     return x_adv_purifieds
+
+
+def diffusion_purification_benchmark_black(interconnection, model_name, attack_algorithm,
+                                           input_transformation_algorithm, transformation_parameters, device):
     setup_random_seeds(428)
     script_dir = Path(__file__).resolve().parent
     # Get the attack result dir, load attacked data
-    result_dir = f"{script_dir}/../../adv_attack_result/black/{interconnection}/{model_name}/{attack_algorithm}"
+    result_dir = (f"{script_dir}/../../adv_exp_result/black/max_queries_5000_epsilon_l2_40/"
+                  f"{interconnection}/{model_name}/{attack_algorithm}")
     exp_name = f"{interconnection}_{model_name}_{attack_algorithm}"
     result_sub_dir = f"{result_dir}/{exp_name}"
     x_adv = np.load(f'{result_sub_dir}/x_adv.npy')
