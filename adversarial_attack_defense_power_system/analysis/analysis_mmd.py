@@ -1,12 +1,13 @@
-from .utils import *
-from .analysis_snr import *
+from adversarial_attack_defense_power_system.analysis.utils import *
+from adversarial_attack_defense_power_system.analysis.analysis_snr import *
 
 
 def stat_mmd_changes():
     # Load the data
     original = np.load('../../data/datasets_original/ic_b/test_data.npy')[:, :, :40, :]
     x = np.load('../../data/datasets/ic_b/test_data.npy')[:, :, :40, :]
-    x_adv = np.load('../../adv_attack_result/black/b/resnet50/bit_schedule_v6/b_resnet50_bit_schedule_v6/x_adv.npy')
+    x_adv = np.load('../../adv_exp_result/black/max_queries_1000_epsilon_l2_40'
+                    '/b/resnet50/bit_schedule_v6/b_resnet50_bit_schedule_v6/x_adv.npy')
     x_adv = np.transpose(x_adv, (0, 2, 3, 1))
     perturbation = x_adv - x
 

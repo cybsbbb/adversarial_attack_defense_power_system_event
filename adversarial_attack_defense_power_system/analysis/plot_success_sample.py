@@ -55,7 +55,8 @@ if __name__ == '__main__':
 
     # Load the data
     x = np.load('../../data/datasets/ic_b/test_data.npy')[:, :, :40, :]
-    x_adv = np.load('../../adv_attack_result/black/b/resnet50/bit_schedule_v6/b_resnet50_bit_schedule_v6/x_adv.npy')
+    x_adv = np.load('../../adv_exp_result/black/max_queries_1000_epsilon_l2_40'
+                    '/b/resnet50/bit_schedule_v6/b_resnet50_bit_schedule_v6/x_adv.npy')
     x_adv = np.transpose(x_adv, (0, 2, 3, 1))
 
     # Get the samples
@@ -76,7 +77,7 @@ if __name__ == '__main__':
     print(f"Original prediction: {softmax(net(original_sample_torch))}")
     print(f"Adversarial sample prediction: {softmax(net(adv_sample_torch))}")
 
-    sample_figures_dir = f"./../../adv_attack_result/analysis/sample_figures"
+    sample_figures_dir = f"./../../adv_exp_result/analysis/sample_figures"
     if not os.path.exists(sample_figures_dir):
         os.makedirs(sample_figures_dir)
 
